@@ -32,7 +32,7 @@ export default function EventsPage() {
         }
 
         const data = await response.json();
-        // setEvents(data);
+
         const today = new Date().toLocaleDateString("en-CA");
 
         const upcomingEvents = data.filter(
@@ -54,7 +54,7 @@ export default function EventsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white">
         <p className="text-lg font-medium">Loading events...</p>
       </div>
     );
@@ -62,14 +62,14 @@ export default function EventsPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
         <p className="text-red-500">{error}</p>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-12">
+    <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-7xl">
 
         <div className="mb-10 text-center">
@@ -77,21 +77,22 @@ export default function EventsPage() {
             MAKE A DIFFERENCE
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">
+          <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
             Explore All Events
           </h1>
 
-          <p className="mt-3 text-slate-500">
+          <p className="mt-3 text-slate-500 dark:text-slate-400">
             Discover events and join hands to make a positive change.
           </p>
         </div>
 
         {events.length === 0 ? (
-          <div className="rounded-xl bg-white p-10 text-center shadow">
-            <h2 className="text-xl font-semibold">
+          <div className="rounded-xl bg-white p-10 text-center shadow transition-colors dark:bg-slate-900">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
               No Events Found
             </h2>
-            <p className="mt-2 text-slate-500">
+
+            <p className="mt-2 text-slate-500 dark:text-slate-400">
               Be the first to create a community event!
             </p>
 
@@ -107,9 +108,9 @@ export default function EventsPage() {
             {events.map((event) => (
               <div
                 key={event._id}
-                className="overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
+                className="overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900"
               >
-                <div className="relative h-52 w-full bg-slate-100">
+                <div className="relative h-52 w-full bg-slate-100 dark:bg-slate-800">
                   {event.image ? (
                     <Image
                       src={event.image}
@@ -126,19 +127,19 @@ export default function EventsPage() {
                 </div>
 
                 <div className="space-y-3 p-5">
-                  <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                  <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-900 dark:text-green-200">
                     {event.eventType}
                   </span>
 
-                  <h2 className="text-xl font-bold text-slate-900">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                     {event.title}
                   </h2>
 
-                  <p className="line-clamp-2 text-sm text-slate-500">
+                  <p className="line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
                     {event.description}
                   </p>
 
-                  <div className="space-y-2 border-t pt-3 text-sm text-slate-600">
+                  <div className="space-y-2 border-t border-slate-200 pt-3 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
                     <p>📍 {event.location}</p>
                     <p>📅 {event.eventDate}</p>
                     <p>🕒 {event.eventTime}</p>

@@ -58,8 +58,6 @@ export default function Page() {
     setError("");
   };
 
-
-
   const handleUploadImage = async () => {
     if (!image) {
       setError("Please select an image first.");
@@ -169,9 +167,6 @@ export default function Page() {
     }
   };
 
-
-
-
   const handleRemoveImage = () => {
     if (preview) {
       URL.revokeObjectURL(preview);
@@ -187,26 +182,29 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-12">
+    <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
           <p className="mb-2 font-semibold text-green-600">
             MAKE A DIFFERENCE
           </p>
 
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
             Create a New Event
           </h1>
 
-          <p className="mt-3 text-slate-500">
+          <p className="mt-3 text-slate-500 dark:text-slate-400">
             Bring people together and create positive change in your community.
           </p>
         </div>
 
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="border-b pb-5">
-            <CardTitle className="text-xl">Event Information</CardTitle>
-            <CardDescription>
+        <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+          <CardHeader className="border-b border-slate-200 pb-5 dark:border-slate-700">
+            <CardTitle className="text-xl text-slate-900 dark:text-white">
+              Event Information
+            </CardTitle>
+
+            <CardDescription className="text-slate-500 dark:text-slate-400">
               Fill in the details to publish your community event.
             </CardDescription>
           </CardHeader>
@@ -214,22 +212,28 @@ export default function Page() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Event Title</label>
+                <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  Event Title
+                </label>
+
                 <Input
                   name="title"
                   placeholder="e.g. Tree Plantation Program"
                   required
+                  className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Event Type</label>
+                <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  Event Type
+                </label>
 
                 <Select
                   value={eventType}
                   onValueChange={(value) => setEventType(value ?? "")}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full border-slate-300 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
                     <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
 
@@ -244,29 +248,51 @@ export default function Page() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Location</label>
+                <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  Location
+                </label>
+
                 <Input
                   name="location"
                   placeholder="Enter event location"
                   required
+                  className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Event Date</label>
-                  <Input name="eventDate" type="date" required />
+                  <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    Event Date
+                  </label>
+
+                  <Input
+                    name="eventDate"
+                    type="date"
+                    required
+                    className="border-slate-300 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Event Time</label>
-                  <Input name="eventTime" type="time" required />
+                  <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    Event Time
+                  </label>
+
+                  <Input
+                    name="eventTime"
+                    type="time"
+                    required
+                    className="border-slate-300 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
                 </div>
               </div>
 
               {/* Event Image Upload */}
               <div className="space-y-3">
-                <label className="text-sm font-medium">Event Image</label>
+                <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  Event Image
+                </label>
 
                 <input
                   ref={fileInputRef}
@@ -278,7 +304,7 @@ export default function Page() {
 
                 {preview ? (
                   <div className="space-y-3">
-                    <div className="overflow-hidden rounded-xl border bg-white">
+                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
                       <Image
                         src={preview}
                         alt="Event preview"
@@ -293,6 +319,7 @@ export default function Page() {
                         type="button"
                         variant="outline"
                         onClick={() => fileInputRef.current?.click()}
+                        className="dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
                       >
                         Change Image
                       </Button>
@@ -310,19 +337,19 @@ export default function Page() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-white px-6 py-10 text-center transition hover:border-green-500 hover:bg-green-50"
+                    className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-white px-6 py-10 text-center transition hover:border-green-500 hover:bg-green-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-green-500 dark:hover:bg-slate-700"
                   >
                     <span className="mb-3 text-4xl">📷</span>
 
-                    <span className="font-semibold text-slate-700">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">
                       Click to upload event image
                     </span>
 
-                    <span className="mt-2 text-sm text-slate-500">
+                    <span className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                       Choose from your device gallery
                     </span>
 
-                    <span className="mt-1 text-xs text-slate-400">
+                    <span className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                       JPG, PNG, WEBP • Maximum 5 MB
                     </span>
                   </button>
@@ -334,18 +361,21 @@ export default function Page() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  Description
+                </label>
+
                 <Textarea
                   name="description"
                   placeholder="Describe your event and its purpose..."
-                  className="min-h-32 resize-none"
+                  className="min-h-32 resize-none border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
                   required
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full bg-green-600 text-white hover:bg-green-700"
                 disabled={!eventType}
               >
                 Create Event

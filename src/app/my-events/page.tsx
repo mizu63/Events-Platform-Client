@@ -175,8 +175,8 @@ export default function Page() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg font-semibold text-slate-600">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
+        <p className="text-lg font-semibold text-slate-600 dark:text-slate-300">
           Loading your events...
         </p>
       </div>
@@ -184,25 +184,25 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-12">
+    <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-6xl">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
             My Events
           </h1>
 
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-slate-600 dark:text-slate-400">
             Manage and explore the events you have created.
           </p>
         </div>
 
         {events.length === 0 ? (
-          <div className="rounded-xl bg-white p-10 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-800">
+          <div className="rounded-xl bg-white p-10 text-center shadow-sm transition-colors dark:bg-slate-900">
+            <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
               No Events Found
             </h2>
 
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-500 dark:text-slate-400">
               You haven't created any events yet.
             </p>
 
@@ -218,10 +218,10 @@ export default function Page() {
             {events.map((event) => (
               <div
                 key={event._id}
-                className="overflow-hidden rounded-xl bg-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="overflow-hidden rounded-xl bg-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900"
               >
                 {event.image ? (
-                  <div className="relative h-52 w-full">
+                  <div className="relative h-52 w-full bg-slate-100 dark:bg-slate-800">
                     <Image
                       src={event.image}
                       alt={event.title}
@@ -231,25 +231,25 @@ export default function Page() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-52 items-center justify-center bg-slate-100 text-slate-400">
+                  <div className="flex h-52 items-center justify-center bg-slate-100 text-slate-400 dark:bg-slate-800">
                     No Image Available
                   </div>
                 )}
 
                 <div className="space-y-3 p-5">
-                  <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+                  <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 dark:bg-green-900 dark:text-green-200">
                     {event.eventType || "Event"}
                   </span>
 
-                  <h2 className="text-xl font-bold text-slate-900">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                     {event.title}
                   </h2>
 
-                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">
+                  <p className="line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                     {event.description}
                   </p>
 
-                  <div className="space-y-2 border-t pt-3 text-sm text-slate-600">
+                  <div className="space-y-2 border-t border-slate-200 pt-3 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
                     <p>📍 {event.location || "Not provided"}</p>
                     <p>📅 {event.eventDate || "Not provided"}</p>
                     <p>🕒 {event.eventTime || "Not provided"}</p>
@@ -287,14 +287,14 @@ export default function Page() {
       {/* Update Event Dialog */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4">
-          <div className="my-8 w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="mb-6 text-2xl font-bold text-slate-900">
+          <div className="my-8 w-full max-w-lg rounded-xl bg-white p-6 text-slate-900 shadow-xl transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
+            <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">
               Update Event
             </h2>
 
             <form onSubmit={handleUpdateEvent} className="space-y-4">
               <div>
-                <label className="mb-1 block font-medium">
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Title
                 </label>
 
@@ -302,12 +302,12 @@ export default function Page() {
                   name="title"
                   defaultValue={selectedEvent.title}
                   required
-                  className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block font-medium">
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Type
                 </label>
 
@@ -315,12 +315,12 @@ export default function Page() {
                   name="eventType"
                   defaultValue={selectedEvent.eventType}
                   required
-                  className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block font-medium">
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Location
                 </label>
 
@@ -328,12 +328,12 @@ export default function Page() {
                   name="location"
                   defaultValue={selectedEvent.location}
                   required
-                  className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block font-medium">
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Date
                 </label>
 
@@ -343,12 +343,12 @@ export default function Page() {
                   defaultValue={selectedEvent.eventDate}
                   min={new Date().toLocaleDateString("en-CA")}
                   required
-                  className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block font-medium">
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Time
                 </label>
 
@@ -356,12 +356,12 @@ export default function Page() {
                   type="time"
                   name="eventTime"
                   defaultValue={selectedEvent.eventTime}
-                  className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block font-medium">
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Description
                 </label>
 
@@ -370,7 +370,7 @@ export default function Page() {
                   defaultValue={selectedEvent.description}
                   required
                   rows={4}
-                  className="w-full rounded-lg border p-3 outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
@@ -379,7 +379,7 @@ export default function Page() {
                   type="button"
                   onClick={() => setSelectedEvent(null)}
                   disabled={updating}
-                  className="flex-1 rounded-lg border py-3 font-semibold text-slate-700 hover:bg-slate-100"
+                  className="flex-1 rounded-lg border border-slate-300 py-3 font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -387,7 +387,7 @@ export default function Page() {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="flex-1 rounded-lg bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="flex-1 rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
                 >
                   {updating ? "Updating..." : "Save Changes"}
                 </button>

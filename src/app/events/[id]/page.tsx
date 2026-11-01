@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -27,6 +28,7 @@ export default function EventDetailsPage() {
   const [error, setError] = useState("");
   const [joining, setJoining] = useState(false);
   const [alreadyJoined, setAlreadyJoined] = useState(false);
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -51,7 +53,6 @@ export default function EventDetailsPage() {
 
     if (id) fetchEvent();
   }, [id]);
-
 
   useEffect(() => {
     const checkJoinedEvent = async () => {
@@ -87,11 +88,9 @@ export default function EventDetailsPage() {
     if (id) checkJoinedEvent();
   }, [id]);
 
-
-
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-700 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-200">
         Loading event details...
       </div>
     );
@@ -99,9 +98,13 @@ export default function EventDetailsPage() {
 
   if (error || !event) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
         <p className="text-red-500">{error || "Event not found"}</p>
-        <Link href="/events" className="text-green-600">
+
+        <Link
+          href="/events"
+          className="text-green-600 hover:text-green-700"
+        >
           Back to Events
         </Link>
       </div>
@@ -140,49 +143,47 @@ export default function EventDetailsPage() {
     }
   };
 
-
-
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-12">
+    <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-4xl">
         <Link
           href="/events"
-          className="mb-6 inline-block font-semibold text-green-600"
+          className="mb-6 inline-block font-semibold text-green-600 transition hover:text-green-700"
         >
           ← Back to Events
         </Link>
 
-        <div className="overflow-hidden rounded-2xl bg-white shadow-lg">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-lg transition-colors duration-300 dark:bg-slate-900">
           {event.image ? (
-            <div className="relative h-64 w-full sm:h-96">
+            <div className="relative h-64 w-full bg-slate-100 dark:bg-slate-800 sm:h-96">
               <Image
                 src={event.image}
                 alt={event.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 896px"
-                className="object-cover"
+                className="object-contain"
               />
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center bg-slate-100 text-slate-400">
+            <div className="flex h-64 items-center justify-center bg-slate-100 text-slate-400 dark:bg-slate-800">
               No Image Available
             </div>
           )}
 
           <div className="space-y-5 p-6 sm:p-8">
-            <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+            <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 dark:bg-green-900 dark:text-green-200">
               {event.eventType}
             </span>
 
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               {event.title}
             </h1>
 
-            <p className="leading-7 text-slate-600">
+            <p className="leading-7 text-slate-600 dark:text-slate-300">
               {event.description}
             </p>
 
-            <div className="space-y-3 border-t pt-5 text-slate-700">
+            <div className="space-y-3 border-t border-slate-200 pt-5 text-slate-700 dark:border-slate-700 dark:text-slate-300">
               <p>📍 Location: {event.location}</p>
               <p>📅 Date: {event.eventDate || "Not provided"}</p>
               <p>🕒 Time: {event.eventTime || "Not provided"}</p>
@@ -199,7 +200,6 @@ export default function EventDetailsPage() {
                     ? "Joining..."
                     : "Join Event"}
               </button>
-
             </div>
           </div>
         </div>
