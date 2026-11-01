@@ -1,3 +1,4 @@
+
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { jwt } from "better-auth/plugins";
@@ -11,6 +12,20 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+  },
+
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["github"],
+    },
+  },
+
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
   },
 
   plugins: [jwt()],
