@@ -73,7 +73,7 @@ export default function EventDetailsPage() {
         setError("");
 
         const response = await fetch(
-          `http://localhost:5000/events/${id}`,
+         `${process.env.NEXT_PUBLIC_API_URL}/events/${id}`,
           { signal: controller.signal }
         );
 
@@ -123,7 +123,7 @@ export default function EventDetailsPage() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/joined-events",
+        `${process.env.NEXT_PUBLIC_API_URL}/joined-events`,
           {
             headers: {
               Authorization: `Bearer ${data.token}`,
@@ -177,7 +177,7 @@ export default function EventDetailsPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/join-event", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/join-event`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

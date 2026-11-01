@@ -65,7 +65,7 @@ export default function Page() {
 
         if (!tokenData?.token) return;
 
-        const response = await fetch("http://localhost:5000/my-events", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-events`, {
           headers: {
             Authorization: `Bearer ${tokenData.token}`,
           },
@@ -136,7 +136,7 @@ export default function Page() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/my-events/${selectedEvent._id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/my-events/${selectedEvent._id}`,
         {
           method: "PATCH",
           headers: {
@@ -185,7 +185,7 @@ export default function Page() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/my-events/${eventId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/my-events/${eventId}`,
         {
           method: "DELETE",
           headers: {

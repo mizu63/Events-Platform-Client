@@ -73,7 +73,7 @@ export default function Page() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/joined-events",
+        `${process.env.NEXT_PUBLIC_API_URL}/joined-events`,
           {
             headers: {
               Authorization: `Bearer ${data.token}`,
@@ -132,7 +132,7 @@ export default function Page() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/leave-event/${eventId}`,
+     `${process.env.NEXT_PUBLIC_API_URL}/leave-event/${eventId}`,
         {
           method: "DELETE",
           headers: {

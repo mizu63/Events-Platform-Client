@@ -75,7 +75,7 @@ export default function Page() {
       const formData = new FormData();
       formData.append("image", image);
 
-      const response = await fetch("http://localhost:5000/upload-image", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload-image`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${tokenData.token}`,
@@ -139,7 +139,7 @@ export default function Page() {
         image: imageUrl,
       };
 
-      const response = await fetch("http://localhost:5000/events", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,12 +2,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const Navbar = () => {
+const NavbarContent = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
@@ -237,4 +237,10 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default function Navbar() {
+    return (
+        <Suspense fallback={<div className="h-20" />}>
+            <NavbarContent />
+        </Suspense>
+    );
+}
