@@ -21,10 +21,9 @@ const Navbar = () => {
     };
 
     const navLinkClass = (path: string) =>
-        `transition-all duration-200 font-medium ${
-            pathname === path
-                ? "text-green-700 dark:text-green-400"
-                : "text-gray-600 hover:text-green-700 dark:text-gray-300 dark:hover:text-green-400"
+        `transition-all duration-200 font-medium ${pathname === path
+            ? "text-green-700 dark:text-green-400"
+            : "text-gray-600 hover:text-green-700 dark:text-gray-300 dark:hover:text-green-400"
         }`;
 
     return (
@@ -99,6 +98,13 @@ const Navbar = () => {
                                                         {session.user.email}
                                                     </p>
                                                 </div>
+                                                <Link
+                                                    href="/profile"
+                                                    onClick={() => setProfileOpen(false)}
+                                                    className="block px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-700 transition"
+                                                >
+                                                    👤 My Profile
+                                                </Link>
 
                                                 <div className="p-2 space-y-1">
                                                     <Link href="/create-event" onClick={() => setProfileOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-700 transition">
@@ -186,6 +192,13 @@ const Navbar = () => {
                                                 {session.user.email}
                                             </p>
                                         </div>
+                                        <Link
+                                            href="/profile"
+                                            onClick={() => setMenuOpen(false)}
+                                            className="block px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800 hover:text-green-700 transition"
+                                        >
+                                            👤 My Profile
+                                        </Link>
 
                                         <Link href="/create-event" onClick={() => setMenuOpen(false)} className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800">
                                             ✚ Create Event

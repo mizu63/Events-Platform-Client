@@ -163,9 +163,41 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <p className="py-10 text-center text-slate-500 dark:text-slate-400">
-              Loading events...
-            </p>
+            // Loading Skeleton
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="animate-pulse overflow-hidden rounded-xl bg-slate-50 shadow-md dark:bg-slate-800"
+                >
+                  {/* Image Skeleton */}
+                  <div className="h-52 w-full bg-slate-200 dark:bg-slate-700" />
+
+                  <div className="space-y-4 p-5">
+                    {/* Event Type Skeleton */}
+                    <div className="h-6 w-24 rounded-full bg-slate-200 dark:bg-slate-700" />
+
+                    {/* Title Skeleton */}
+                    <div className="h-6 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
+
+                    {/* Description Skeleton */}
+                    <div className="space-y-2">
+                      <div className="h-4 w-full rounded bg-slate-200 dark:bg-slate-700" />
+                      <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700" />
+                    </div>
+
+                    {/* Location Skeleton */}
+                    <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700" />
+
+                    {/* Date Skeleton */}
+                    <div className="h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
+
+                    {/* Button Skeleton */}
+                    <div className="h-11 w-full rounded-lg bg-slate-200 dark:bg-slate-700" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : events.length === 0 ? (
             <p className="rounded-xl bg-slate-50 p-10 text-center text-slate-600 dark:bg-slate-800 dark:text-slate-300">
               No upcoming events available.

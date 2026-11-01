@@ -1,9 +1,9 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
 type JoinedEvent = {
@@ -19,16 +19,115 @@ type JoinedEvent = {
   image?: string;
 };
 
+type ToastType = "success" | "error";
+
+type ToastData = {
+  message: string;
+  type: ToastType;
+};
+
 export default function Page() {
   const [joinedEvents, setJoinedEvents] = useState<JoinedEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [leavingEventId, setLeavingEventId] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastData | null>(null);
 
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Toast Notification
+  const showToast = (message: string, type: ToastType) => {
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    setToast({ message, type });
+
+    toastTimer.current = setTimeout(() => {
+      setToast(null);
+      toastTimer.current = null;
+    }, 3000);
+  };
+
+  // Clear Toast Timer
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) {
+        clearTimeout(toastTimer.current);
+      }
+    };
+  }, []);
+
+  // Fetch Joined Events
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchJoinedEvents = async () => {
+      try {
+        setLoading(true);
+
+        const { data } = await authClient.token();
+
+        if (!data?.token) {
+          setJoinedEvents([]);
+          return;
+        }
+
+        const response = await fetch(
+          "http://localhost:5000/joined-events",
+          {
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+            },
+            signal: controller.signal,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch joined events");
+        }
+
+        const result: JoinedEvent[] = await response.json();
+
+        const sortedEvents = [...result].sort(
+          (a, b) =>
+            new Date(a.eventDate).getTime() -
+            new Date(b.eventDate).getTime()
+        );
+
+        setJoinedEvents(sortedEvents);
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+
+        console.error("Failed to fetch joined events:", error);
+        showToast(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong",
+          "error"
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchJoinedEvents();
+
+    return () => controller.abort();
+  }, []);
+
+  // Leave Event
   const handleLeaveEvent = async (eventId: string) => {
+    if (leavingEventId) return;
+
     try {
+      setLeavingEventId(eventId);
+
       const { data } = await authClient.token();
 
       if (!data?.token) {
-        alert("Please login first");
+        showToast("Please login first.", "error");
         return;
       }
 
@@ -42,61 +141,32 @@ export default function Page() {
         }
       );
 
-      const result = await response.json();
+      const result = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to leave event");
+        throw new Error(
+          result?.message || "Failed to leave event"
+        );
       }
 
       setJoinedEvents((previousEvents) =>
         previousEvents.filter((event) => event.eventId !== eventId)
       );
 
-      alert("Successfully left the event!");
+      showToast("Successfully left the event!", "success");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Something went wrong");
+      showToast(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong",
+        "error"
+      );
+    } finally {
+      setLeavingEventId(null);
     }
   };
 
-  useEffect(() => {
-    const fetchJoinedEvents = async () => {
-      try {
-        const { data } = await authClient.token();
-
-        if (!data?.token) return;
-
-        const response = await fetch(
-          "http://localhost:5000/joined-events",
-          {
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch joined events");
-        }
-
-        const result = await response.json();
-
-        const sortedEvents = result.sort(
-          (a: JoinedEvent, b: JoinedEvent) =>
-            new Date(a.eventDate).getTime() -
-            new Date(b.eventDate).getTime()
-        );
-
-        setJoinedEvents(sortedEvents);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJoinedEvents();
-  }, []);
-
+  // Loading State
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white">
@@ -107,6 +177,48 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="fixed right-5 top-5 z-50"
+        >
+          <div
+            className={`flex items-center gap-3 rounded-xl px-5 py-4 text-white shadow-lg ${
+              toast.type === "success"
+                ? "bg-green-600"
+                : "bg-red-600"
+            }`}
+          >
+            {toast.type === "success" ? (
+              <CheckCircle2 size={22} />
+            ) : (
+              <XCircle size={22} />
+            )}
+
+            <p className="font-medium">{toast.message}</p>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (toastTimer.current) {
+                  clearTimeout(toastTimer.current);
+                  toastTimer.current = null;
+                }
+
+                setToast(null);
+              }}
+              aria-label="Close notification"
+              className="ml-2 text-xl leading-none hover:opacity-75"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl">
         <h1 className="mb-8 text-3xl font-bold text-slate-900 dark:text-white">
           My Joined Events
@@ -177,9 +289,12 @@ export default function Page() {
 
                   <button
                     onClick={() => handleLeaveEvent(event.eventId)}
-                    className="w-full rounded-lg bg-red-600 py-2 font-semibold text-white transition hover:bg-red-700"
+                    disabled={leavingEventId !== null}
+                    className="w-full rounded-lg bg-red-600 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Leave Event
+                    {leavingEventId === event.eventId
+                      ? "Leaving..."
+                      : "Leave Event"}
                   </button>
                 </div>
               </div>

@@ -2,9 +2,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 type Event = {
   _id: string;
@@ -17,12 +18,46 @@ type Event = {
   image?: string;
 };
 
+type ToastType = "success" | "error";
+
+type ToastData = {
+  message: string;
+  type: ToastType;
+};
+
 export default function Page() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [toast, setToast] = useState<ToastData | null>(null);
 
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Show Toast
+  const showToast = (message: string, type: ToastType) => {
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    setToast({ message, type });
+
+    toastTimer.current = setTimeout(() => {
+      setToast(null);
+      toastTimer.current = null;
+    }, 3000);
+  };
+
+  // Clear Toast Timer
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) {
+        clearTimeout(toastTimer.current);
+      }
+    };
+  }, []);
+
+  // Fetch My Events
   useEffect(() => {
     const getMyEvents = async () => {
       try {
@@ -44,6 +79,10 @@ export default function Page() {
         setEvents(data);
       } catch (error) {
         console.error(error);
+        showToast(
+          error instanceof Error ? error.message : "Something went wrong",
+          "error"
+        );
       } finally {
         setLoading(false);
       }
@@ -85,14 +124,14 @@ export default function Page() {
       );
 
       if (!updatedData.eventDate || selectedDate < today) {
-        alert("Please select today or a future date.");
+        showToast("Please select today or a future date.", "error");
         return;
       }
 
       const { data: tokenData } = await authClient.token();
 
       if (!tokenData?.token) {
-        alert("Please login first");
+        showToast("Please login first.", "error");
         return;
       }
 
@@ -123,9 +162,12 @@ export default function Page() {
       );
 
       setSelectedEvent(null);
-      alert("Event updated successfully!");
+      showToast("Event updated successfully!", "success");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Something went wrong");
+      showToast(
+        error instanceof Error ? error.message : "Something went wrong",
+        "error"
+      );
     } finally {
       setUpdating(false);
     }
@@ -133,17 +175,12 @@ export default function Page() {
 
   // Delete Event
   const handleDeleteEvent = async (eventId: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this event?"
-    );
-
-    if (!confirmed) return;
-
+  
     try {
       const { data: tokenData } = await authClient.token();
 
       if (!tokenData?.token) {
-        alert("Please login first");
+        showToast("Please login first.", "error");
         return;
       }
 
@@ -167,12 +204,16 @@ export default function Page() {
         previousEvents.filter((event) => event._id !== eventId)
       );
 
-      alert("Event deleted successfully!");
+      showToast("Event deleted successfully!", "success");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Something went wrong");
+      showToast(
+        error instanceof Error ? error.message : "Something went wrong",
+        "error"
+      );
     }
   };
 
+  // Loading State
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
@@ -185,6 +226,48 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="fixed right-5 top-5 z-[100] max-w-sm"
+        >
+          <div
+            className={`flex items-center gap-3 rounded-xl px-5 py-4 text-white shadow-lg ${
+              toast.type === "success"
+                ? "bg-green-600"
+                : "bg-red-600"
+            }`}
+          >
+            {toast.type === "success" ? (
+              <CheckCircle2 size={22} />
+            ) : (
+              <XCircle size={22} />
+            )}
+
+            <p className="font-medium">{toast.message}</p>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (toastTimer.current) {
+                  clearTimeout(toastTimer.current);
+                  toastTimer.current = null;
+                }
+
+                setToast(null);
+              }}
+              aria-label="Close notification"
+              className="ml-2 text-xl leading-none hover:opacity-75"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
