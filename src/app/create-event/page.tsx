@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,15 +22,69 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { CheckCircle2, XCircle } from "lucide-react";
+
+type ToastType = "success" | "error";
+
+type ToastData = {
+  message: string;
+  type: ToastType;
+};
 
 export default function Page() {
+  const router = useRouter();
+
   const [eventType, setEventType] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<ToastData | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Toast Notification
+  const showToast = (message: string, type: ToastType) => {
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    setToast({ message, type });
+
+    toastTimer.current = setTimeout(() => {
+      setToast(null);
+      toastTimer.current = null;
+    }, 3000);
+  };
+
+  // Tomorrow's Date
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) {
+        clearTimeout(toastTimer.current);
+      }
+
+      if (redirectTimer.current) {
+        clearTimeout(redirectTimer.current);
+      }
+    };
+  }, []);
+
+  // Image Selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
@@ -58,115 +113,47 @@ export default function Page() {
     setError("");
   };
 
+  // Image Upload
   const handleUploadImage = async () => {
     if (!image) {
-      setError("Please select an image first.");
-      return null;
+      throw new Error("Please select an event image.");
     }
 
-    try {
-      const { data: tokenData, error: tokenError } =
-        await authClient.token();
+    const { data: tokenData, error: tokenError } =
+      await authClient.token();
 
-      if (tokenError || !tokenData?.token) {
-        throw new Error("Unable to get authentication token.");
-      }
+    if (tokenError || !tokenData?.token) {
+      throw new Error("Unable to get authentication token.");
+    }
 
-      const formData = new FormData();
-      formData.append("image", image);
+    const formData = new FormData();
+    formData.append("image", image);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload-image`, {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/upload-image`,
+      {
         method: "POST",
         headers: {
           Authorization: `Bearer ${tokenData.token}`,
         },
         body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Image upload failed.");
       }
+    );
 
-      return result.imageUrl;
-    } catch (err) {
-      console.error(err);
-      setError(
-        err instanceof Error ? err.message : "Image upload failed."
-      );
-      return null;
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Image upload failed.");
     }
+
+    if (!result.imageUrl) {
+      throw new Error("Image URL was not returned by the server.");
+    }
+
+    return result.imageUrl;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
-
-      if (!eventType) {
-        setError("Please select an event type.");
-        return;
-      }
-
-      const { data: tokenData, error: tokenError } =
-        await authClient.token();
-
-      if (tokenError || !tokenData?.token) {
-        throw new Error("Please login first.");
-      }
-
-      let imageUrl = "";
-
-      if (image) {
-        imageUrl = await handleUploadImage();
-
-        if (!imageUrl) {
-          return;
-        }
-      }
-
-      const eventData = {
-        title: formData.get("title"),
-        eventType,
-        location: formData.get("location"),
-        eventDate: formData.get("eventDate"),
-        eventTime: formData.get("eventTime"),
-        description: formData.get("description"),
-        image: imageUrl,
-      };
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenData.token}`,
-        },
-        body: JSON.stringify(eventData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to create event.");
-      }
-
-      alert("Event created successfully!");
-
-      form.reset();
-      setEventType("");
-      handleRemoveImage();
-    } catch (err) {
-      console.error(err);
-      setError(
-        err instanceof Error ? err.message : "Something went wrong."
-      );
-    }
-  };
-
+  // Remove Image
   const handleRemoveImage = () => {
     if (preview) {
       URL.revokeObjectURL(preview);
@@ -181,8 +168,156 @@ export default function Page() {
     }
   };
 
+  // Create Event
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      setLoading(true);
+
+      if (!eventType) {
+        throw new Error("Please select an event type.");
+      }
+
+      if (!image) {
+        throw new Error("Please select an event image.");
+      }
+
+      const title = String(formData.get("title") || "").trim();
+      const location = String(formData.get("location") || "").trim();
+      const eventDate = String(formData.get("eventDate") || "");
+      const eventTime = String(formData.get("eventTime") || "");
+      const description = String(formData.get("description") || "").trim();
+
+      if (!title || !location || !eventDate || !eventTime || !description) {
+        throw new Error("Please fill in all fields.");
+      }
+
+      // Future Date Validation
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const selectedDate = new Date(`${eventDate}T00:00:00`);
+
+      if (
+        !eventDate ||
+        isNaN(selectedDate.getTime()) ||
+        selectedDate <= today
+      ) {
+        throw new Error("Please select a future event date.");
+      }
+
+      // Authentication
+      const { data: tokenData, error: tokenError } =
+        await authClient.token();
+
+      if (tokenError || !tokenData?.token) {
+        throw new Error("Please login first.");
+      }
+
+      // Upload Image
+      const imageUrl = await handleUploadImage();
+
+      // Event Data
+      const eventData = {
+        title,
+        eventType,
+        location,
+        eventDate,
+        eventTime,
+        description,
+        image: imageUrl,
+      };
+
+      // API Request
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData.token}`,
+          },
+          body: JSON.stringify(eventData),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to create event.");
+      }
+
+      // Success
+      showToast("Event created successfully!", "success");
+
+      form.reset();
+      setEventType("");
+      handleRemoveImage();
+
+      // Redirect
+      redirectTimer.current = setTimeout(() => {
+       router.push("/events");
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+
+      const message =
+        err instanceof Error ? err.message : "Something went wrong.";
+
+      setError(message);
+      showToast(message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="fixed right-5 top-5 z-[100] max-w-sm"
+        >
+          <div
+            className={`flex items-center gap-3 rounded-xl px-5 py-4 text-white shadow-lg ${
+              toast.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            {toast.type === "success" ? (
+              <CheckCircle2 size={22} />
+            ) : (
+              <XCircle size={22} />
+            )}
+
+            <p className="font-medium">{toast.message}</p>
+
+            <button
+              type="button"
+              aria-label="Close notification"
+              onClick={() => {
+                if (toastTimer.current) {
+                  clearTimeout(toastTimer.current);
+                  toastTimer.current = null;
+                }
+
+                setToast(null);
+              }}
+              className="ml-2 text-xl leading-none hover:opacity-75"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
           <p className="mb-2 font-semibold text-green-600">
@@ -211,6 +346,8 @@ export default function Page() {
 
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-5">
+
+              {/* Event Title */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
                   Event Title
@@ -224,6 +361,7 @@ export default function Page() {
                 />
               </div>
 
+              {/* Event Type */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
                   Event Type
@@ -247,6 +385,7 @@ export default function Page() {
                 </Select>
               </div>
 
+              {/* Location */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
                   Location
@@ -260,6 +399,7 @@ export default function Page() {
                 />
               </div>
 
+              {/* Date and Time */}
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
@@ -269,6 +409,7 @@ export default function Page() {
                   <Input
                     name="eventDate"
                     type="date"
+                    min={getTomorrowDate()}
                     required
                     className="border-slate-300 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
@@ -288,7 +429,7 @@ export default function Page() {
                 </div>
               </div>
 
-              {/* Event Image Upload */}
+              {/* Image Upload */}
               <div className="space-y-3">
                 <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
                   Event Image
@@ -310,6 +451,7 @@ export default function Page() {
                         alt="Event preview"
                         width={800}
                         height={400}
+                        unoptimized
                         className="h-64 w-full object-cover"
                       />
                     </div>
@@ -354,12 +496,9 @@ export default function Page() {
                     </span>
                   </button>
                 )}
-
-                {error && (
-                  <p className="text-sm text-red-500">{error}</p>
-                )}
               </div>
 
+              {/* Description */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-800 dark:text-slate-200">
                   Description
@@ -373,12 +512,20 @@ export default function Page() {
                 />
               </div>
 
+              {/* Error Message */}
+              {error && (
+                <p className="text-sm text-red-500" role="alert">
+                  {error}
+                </p>
+              )}
+
+              {/* Submit Button */}
               <Button
                 type="submit"
                 className="w-full bg-green-600 text-white hover:bg-green-700"
-                disabled={!eventType}
+                disabled={loading}
               >
-                Create Event
+                {loading ? "Creating Event..." : "Create Event"}
               </Button>
             </form>
           </CardContent>

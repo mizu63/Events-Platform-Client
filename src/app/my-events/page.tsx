@@ -25,6 +25,15 @@ type ToastData = {
   type: ToastType;
 };
 
+const eventTypes = [
+  "Cleanup",
+  "Plantation",
+  "Donation",
+  "Fundraising",
+  "Volunteering",
+  "Other",
+];
+
 export default function Page() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,19 +66,37 @@ export default function Page() {
     };
   }, []);
 
+  // Get Tomorrow's Date
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   // Fetch My Events
   useEffect(() => {
     const getMyEvents = async () => {
       try {
         const { data: tokenData } = await authClient.token();
 
-        if (!tokenData?.token) return;
+        if (!tokenData?.token) {
+          showToast("Please login first.", "error");
+          return;
+        }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-events`, {
-          headers: {
-            Authorization: `Bearer ${tokenData.token}`,
-          },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/my-events`,
+          {
+            headers: {
+              Authorization: `Bearer ${tokenData.token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch your events");
@@ -79,6 +106,7 @@ export default function Page() {
         setEvents(data);
       } catch (error) {
         console.error(error);
+
         showToast(
           error instanceof Error ? error.message : "Something went wrong",
           "error"
@@ -97,9 +125,9 @@ export default function Page() {
   ) => {
     e.preventDefault();
 
-    const form = e.currentTarget;
-
     if (!selectedEvent) return;
+
+    const form = e.currentTarget;
 
     try {
       setUpdating(true);
@@ -107,13 +135,28 @@ export default function Page() {
       const formData = new FormData(form);
 
       const updatedData = {
-        title: String(formData.get("title") || ""),
-        description: String(formData.get("description") || ""),
+        title: String(formData.get("title") || "").trim(),
+        description: String(formData.get("description") || "").trim(),
         eventType: String(formData.get("eventType") || ""),
-        location: String(formData.get("location") || ""),
+        location: String(formData.get("location") || "").trim(),
         eventDate: String(formData.get("eventDate") || ""),
         eventTime: String(formData.get("eventTime") || ""),
+        image: String(formData.get("image") || "").trim(),
       };
+
+      // Required Field Validation
+      if (
+        !updatedData.title ||
+        !updatedData.description ||
+        !updatedData.eventType ||
+        !updatedData.location ||
+        !updatedData.eventDate ||
+        !updatedData.eventTime ||
+        !updatedData.image
+      ) {
+        showToast("Please fill in all fields.", "error");
+        return;
+      }
 
       // Event Date Validation
       const today = new Date();
@@ -123,11 +166,15 @@ export default function Page() {
         `${updatedData.eventDate}T00:00:00`
       );
 
-      if (!updatedData.eventDate || selectedDate < today) {
-        showToast("Please select today or a future date.", "error");
+      if (
+        isNaN(selectedDate.getTime()) ||
+        selectedDate <= today
+      ) {
+        showToast("Please select a future date.", "error");
         return;
       }
 
+      // Authentication
       const { data: tokenData } = await authClient.token();
 
       if (!tokenData?.token) {
@@ -135,8 +182,9 @@ export default function Page() {
         return;
       }
 
+      // Update API Request
       const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/my-events/${selectedEvent._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/my-events/${selectedEvent._id}`,
         {
           method: "PATCH",
           headers: {
@@ -153,6 +201,7 @@ export default function Page() {
         throw new Error(result.message || "Failed to update event");
       }
 
+      // Update Local State
       setEvents((previousEvents) =>
         previousEvents.map((event) =>
           event._id === selectedEvent._id
@@ -164,6 +213,8 @@ export default function Page() {
       setSelectedEvent(null);
       showToast("Event updated successfully!", "success");
     } catch (error) {
+      console.error(error);
+
       showToast(
         error instanceof Error ? error.message : "Something went wrong",
         "error"
@@ -175,7 +226,12 @@ export default function Page() {
 
   // Delete Event
   const handleDeleteEvent = async (eventId: string) => {
-  
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?"
+    );
+
+    if (!confirmed) return;
+
     try {
       const { data: tokenData } = await authClient.token();
 
@@ -185,7 +241,7 @@ export default function Page() {
       }
 
       const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/my-events/${eventId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/my-events/${eventId}`,
         {
           method: "DELETE",
           headers: {
@@ -206,6 +262,8 @@ export default function Page() {
 
       showToast("Event deleted successfully!", "success");
     } catch (error) {
+      console.error(error);
+
       showToast(
         error instanceof Error ? error.message : "Something went wrong",
         "error"
@@ -347,6 +405,7 @@ export default function Page() {
 
                   <div className="flex gap-3">
                     <button
+                      type="button"
                       onClick={() => setSelectedEvent(event)}
                       className="flex-1 rounded-lg bg-blue-600 py-2.5 font-semibold text-white transition hover:bg-blue-700"
                     >
@@ -354,6 +413,7 @@ export default function Page() {
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => handleDeleteEvent(event._id)}
                       className="flex-1 rounded-lg bg-red-600 py-2.5 font-semibold text-white transition hover:bg-red-700"
                     >
@@ -376,6 +436,8 @@ export default function Page() {
             </h2>
 
             <form onSubmit={handleUpdateEvent} className="space-y-4">
+
+              {/* Event Title */}
               <div>
                 <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Title
@@ -389,19 +451,29 @@ export default function Page() {
                 />
               </div>
 
+              {/* Event Type */}
               <div>
                 <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Type
                 </label>
 
-                <input
+                <select
                   name="eventType"
                   defaultValue={selectedEvent.eventType}
                   required
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
+                >
+                  <option value="">Select Event Type</option>
+
+                  {eventTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               </div>
 
+              {/* Location */}
               <div>
                 <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Location
@@ -415,6 +487,23 @@ export default function Page() {
                 />
               </div>
 
+              {/* Thumbnail Image URL */}
+              <div>
+                <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
+                  Thumbnail Image URL
+                </label>
+
+                <input
+                  type="url"
+                  name="image"
+                  defaultValue={selectedEvent.image || ""}
+                  placeholder="Enter image URL"
+                  required
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+              </div>
+
+              {/* Event Date */}
               <div>
                 <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Date
@@ -424,12 +513,13 @@ export default function Page() {
                   type="date"
                   name="eventDate"
                   defaultValue={selectedEvent.eventDate}
-                  min={new Date().toLocaleDateString("en-CA")}
+                  min={getTomorrowDate()}
                   required
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
+              {/* Event Time */}
               <div>
                 <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Event Time
@@ -439,10 +529,12 @@ export default function Page() {
                   type="time"
                   name="eventTime"
                   defaultValue={selectedEvent.eventTime}
+                  required
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
 
+              {/* Description */}
               <div>
                 <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                   Description
@@ -457,6 +549,7 @@ export default function Page() {
                 />
               </div>
 
+              {/* Action Buttons */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
