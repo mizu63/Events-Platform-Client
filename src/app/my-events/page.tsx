@@ -430,7 +430,7 @@ export default function Page() {
       {/* Update Event Dialog */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4">
-          <div className="my-8 w-full max-w-lg rounded-xl bg-white p-6 text-slate-900 shadow-xl transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
+          <div className="my-8 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 text-slate-900 shadow-xl transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
             <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">
               Update Event
             </h2>
