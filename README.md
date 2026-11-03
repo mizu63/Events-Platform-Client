@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EventConnect – Community Event Management Platform
 
-## Getting Started
+EventConnect is a community event management platform where users can discover events, create events, join community activities, and share positive experiences. It helps people connect with their communities through volunteering, donations, and social activities.
 
-First, run the development server:
+## 🚀 Features
+
+- User Authentication with Better Auth
+- User Registration and Login
+- Browse and Explore Community Events
+- Create and Manage Events
+- Join Available Events
+- Update and Delete Events
+- Event Image Upload using Cloudinary
+- Community Gallery to showcase activities
+- Responsive Design for Mobile, Tablet, and Desktop
+- Secure API communication with authentication
+
+## 🛠️ Technologies Used
+
+- Next.js
+- React.js
+- Tailwind CSS
+- JavaScript
+- Node.js
+- Express.js
+- MongoDB
+- Better Auth
+- JWT Authentication
+- Cloudinary
+- Vercel
+
+## 📦 Dependencies
+
+Install project dependencies:
+
+```bash
+npm install
+```
+
+## ⚙️ Getting Started
+
+First, clone the repository:
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
+
+Go to the project directory:
+
+```bash
+cd your-project-folder
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env.local` file in the root directory and configure the required environment variables.
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔐 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Configure the required environment variables for authentication, database connection, API communication, and image uploads.
 
-## Learn More
+Example:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+MONGODB_URI=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+NEXT_PUBLIC_API_URL=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Use the actual variable names required by your project. Never commit secret values to GitHub.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🌐 Deployment
 
-## Deploy on Vercel
+The frontend can be deployed on [Vercel](https://events-platform-client.vercel.app/).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Make sure to configure the required environment variables and backend API URL in the deployment settings.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Author
+
+**Mizu Ahmmed Jim**
+
+- GitHub:https://github.com/mizu63/Events-Platform-Client
+-GitHub:https://github.com/mizu63/Events-Platform-Server
+-Live website:https://events-platform-client.vercel.app/
+
+## 📄 License
+
+This project was developed for educational purposes.
