@@ -168,29 +168,29 @@ export default function Home() {
                   key={index}
                   className="animate-pulse overflow-hidden rounded-xl bg-slate-50 shadow-md dark:bg-slate-800"
                 >
-                  {/* Image Skeleton */}
+              
                   <div className="h-52 w-full bg-slate-200 dark:bg-slate-700" />
 
                   <div className="space-y-4 p-5">
-                    {/* Event Type Skeleton */}
+                 
                     <div className="h-6 w-24 rounded-full bg-slate-200 dark:bg-slate-700" />
 
-                    {/* Title Skeleton */}
+                  
                     <div className="h-6 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
 
-                    {/* Description Skeleton */}
+                 
                     <div className="space-y-2">
                       <div className="h-4 w-full rounded bg-slate-200 dark:bg-slate-700" />
                       <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700" />
                     </div>
 
-                    {/* Location Skeleton */}
+                
                     <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700" />
 
-                    {/* Date Skeleton */}
+                 
                     <div className="h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
 
-                    {/* Button Skeleton */}
+                 
                     <div className="h-11 w-full rounded-lg bg-slate-200 dark:bg-slate-700" />
                   </div>
                 </div>
@@ -258,32 +258,94 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <div className="mb-10 text-center">
-          <p className="font-semibold text-green-600">
-            OUR ACTIVITIES
-          </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
-            Community Gallery
-          </h2>
-        </div>
+  
+<section className="mx-auto max-w-6xl px-5 py-20">
+  {/* Section Heading */}
+  <div className="mb-12 text-center">
+    <span className="inline-block rounded-full bg-green-100 px-4 py-2 text-sm font-semibold tracking-wider text-green-700 dark:bg-green-950 dark:text-green-400">
+      OUR ACTIVITIES
+    </span>
 
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          <div className="flex h-48 items-center justify-center rounded-xl bg-green-100 text-5xl dark:bg-green-950">
-            🌳
-          </div>
+    <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl dark:text-white">
+      Community Gallery
+    </h2>
 
-          <div className="flex h-48 items-center justify-center rounded-xl bg-blue-100 text-5xl dark:bg-blue-950">
-            🤝
-          </div>
+    <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">
+      Small actions create big changes. Explore moments of kindness,
+      teamwork, and positive impact in our communities.
+    </p>
+  </div>
 
-          <div className="flex h-48 items-center justify-center rounded-xl bg-yellow-100 text-5xl dark:bg-yellow-950">
-            ❤️
-          </div>
-        </div>
-      </section>
+  {/* Gallery Grid */}
+  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+    {/* Card 1 */}
+    <div className="group relative h-72 overflow-hidden rounded-2xl shadow-md">
+      <div
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800')",
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+      <div className="absolute bottom-0 p-6 text-white">
+        <span className="text-sm font-semibold text-green-300">
+          ENVIRONMENT
+        </span>
+        <h3 className="mt-2 text-2xl font-bold">Tree Plantation</h3>
+        <p className="mt-2 text-sm text-white/80">
+          Growing a greener and healthier future together.
+        </p>
+      </div>
+    </div>
+
+    {/* Card 2 */}
+    <div className="group relative h-72 overflow-hidden rounded-2xl shadow-md">
+      <div
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800')",
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+      <div className="absolute bottom-0 p-6 text-white">
+        <span className="text-sm font-semibold text-blue-300">
+          VOLUNTEERING
+        </span>
+        <h3 className="mt-2 text-2xl font-bold">Community Support</h3>
+        <p className="mt-2 text-sm text-white/80">
+          Working together to support people in need.
+        </p>
+      </div>
+    </div>
+
+    {/* Card 3 */}
+    <div className="group relative h-72 overflow-hidden rounded-2xl shadow-md">
+      <div
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800')",
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+      <div className="absolute bottom-0 p-6 text-white">
+        <span className="text-sm font-semibold text-yellow-300">
+          DONATION
+        </span>
+        <h3 className="mt-2 text-2xl font-bold">Helping Hands</h3>
+        <p className="mt-2 text-sm text-white/80">
+          Sharing kindness and bringing hope to others.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 
       {/* Newsletter Section */}
       <section className="bg-green-700 px-5 py-16 text-center text-white">

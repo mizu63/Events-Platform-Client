@@ -31,7 +31,7 @@ const NavbarContent = () => {
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="h-20 flex items-center justify-between">
 
-                    {/* Logo */}
+                  
                     <Link href="/" className="flex items-center gap-2 group">
                         <div className="w-11 h-11 rounded-xl bg-green-600 flex items-center justify-center text-white text-2xl shadow-md shadow-green-200 group-hover:bg-green-700 transition">
                             ✦
@@ -47,7 +47,7 @@ const NavbarContent = () => {
                         </div>
                     </Link>
 
-                    {/* Desktop Navigation */}
+              
                     <div className="hidden md:flex items-center gap-8">
                         <Link href="/" className={navLinkClass("/")}>
                             Home
@@ -142,11 +142,11 @@ const NavbarContent = () => {
                             </>
                         )}
 
-                        {/* Theme Toggle */}
+                     
                         <ThemeToggle />
                     </div>
 
-                    {/* Mobile Controls */}
+                 
                     <div className="flex items-center gap-3 md:hidden">
                         <ThemeToggle />
 
@@ -161,7 +161,7 @@ const NavbarContent = () => {
                     </div>
                 </div>
 
-                {/* Mobile Navigation */}
+            
                 {menuOpen && (
                     <div className="md:hidden border-t border-gray-100 dark:border-gray-800 py-5 space-y-3">
                         <Link
