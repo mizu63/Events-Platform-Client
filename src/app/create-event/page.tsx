@@ -375,7 +375,7 @@ export default function Page() {
                     <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
 
-                  <SelectContent>
+                  <SelectContent  className="max-h-60 overflow-y-auto">
                     <SelectItem value="Plantation">Plantation</SelectItem>
                     <SelectItem value="Social Work">Social Work</SelectItem>
                     <SelectItem value="Education">Education</SelectItem>
