@@ -381,6 +381,8 @@ export default function Page() {
                     <SelectItem value="Education">Education</SelectItem>
                     <SelectItem value="Donation">Donation</SelectItem>
                     <SelectItem value="Cleanliness">Cleanliness</SelectItem>
+                       <SelectItem value="Entertainment">Entertainment</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
